@@ -1,9 +1,10 @@
 package http
 
 import (
-	delivery "clean_arch_template/delivery"
-	"clean_arch_template/service"
 	"fmt"
+
+	delivery "clean_arch_template/delivery"
+	service "clean_arch_template/service"
 )
 
 type httpEntity1 struct {
@@ -27,6 +28,9 @@ func (self *httpEntity1) Deinit() {
 
 func (self *httpEntity1) Start() error {
 	fmt.Println("http: Starting up...")
+
+	self.somePrivateMethod()
+	self.service.Act1("")
 	return nil
 }
 
@@ -38,3 +42,6 @@ func (self *httpEntity1) Stop() bool {
 /* ----------------------------------------------------------------------- */
 
 /* Private funcs/methods */
+func (self *httpEntity1) somePrivateMethod() {
+	fmt.Println("http: Hello world! from somePrivateMethod()")
+}

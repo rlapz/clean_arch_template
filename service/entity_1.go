@@ -1,8 +1,10 @@
 package service
 
 import (
-	"clean_arch_template/entity"
-	"clean_arch_template/repo"
+	"fmt"
+
+	entity "clean_arch_template/entity"
+	repo "clean_arch_template/repo"
 )
 
 type entity1Service struct {
@@ -17,6 +19,8 @@ func NewEntity1Service(repo repo.Entity1Repo) Entity1Service {
 
 /* ----------------------------------------------------------------------- */
 func (self *entity1Service) Act1(Id string) error {
+	self.somePrivateMethod()
+	self.repo.Act1("")
 	return nil
 }
 
@@ -27,3 +31,6 @@ func (self *entity1Service) Act2(string) (*entity.Entity1, error) {
 /* ----------------------------------------------------------------------- */
 
 /* Private funcs/methods */
+func (self *entity1Service) somePrivateMethod() {
+	fmt.Println("service: Hello world! from somePrivateMethod()")
+}

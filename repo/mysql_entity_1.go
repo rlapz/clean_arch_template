@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+
 	entity "clean_arch_template/entity"
 )
 
@@ -13,6 +15,7 @@ func NewMysqlEntityRepo() Entity1Repo {
 
 /* ----------------------------------------------------------------------- */
 func (self *mysqlEntity1Repo) Act1(Id string) error {
+	self.somePrivateMethod()
 	return nil
 }
 
@@ -23,3 +26,6 @@ func (self *mysqlEntity1Repo) Act2(Id string) (*entity.Entity1, error) {
 /* ----------------------------------------------------------------------- */
 
 /* Private funcs/methods */
+func (self *mysqlEntity1Repo) somePrivateMethod() {
+	fmt.Println("repo: Hello world! from somePrivateMethod()")
+}
