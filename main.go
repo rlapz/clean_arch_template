@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	repo := repo.NewMysqlEntityRepo()
+	repo := repo.NewMysqlEntity1Repo()
 	service := service.NewEntity1Service(repo)
-	delivery := http.NewHttpEntity1(service)
+	delivery := http.NewHttpEntity1Delivery(service)
 
 	delivery.Init()
 	defer delivery.Deinit()

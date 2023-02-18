@@ -9,7 +9,7 @@ import (
 type mysqlEntity1Repo struct {
 }
 
-func NewMysqlEntityRepo() Entity1Repo {
+func NewMysqlEntity1Repo() Entity1Repo {
 	return &mysqlEntity1Repo{}
 }
 

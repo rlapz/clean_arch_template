@@ -7,26 +7,26 @@ import (
 	service "clean_arch_template/service"
 )
 
-type httpEntity1 struct {
+type httpEntity1Delivery struct {
 	service service.Entity1Service
 }
 
-func NewHttpEntity1(service service.Entity1Service) delivery.Entity1Delivery {
-	return &httpEntity1{
+func NewHttpEntity1Delivery(service service.Entity1Service) delivery.Entity1Delivery {
+	return &httpEntity1Delivery{
 		service: service,
 	}
 }
 
 /* ----------------------------------------------------------------------- */
-func (self *httpEntity1) Init() {
+func (self *httpEntity1Delivery) Init() {
 	fmt.Println("http: Initializing...")
 }
 
-func (self *httpEntity1) Deinit() {
+func (self *httpEntity1Delivery) Deinit() {
 	fmt.Println("http: Cleaning up...")
 }
 
-func (self *httpEntity1) Start() error {
+func (self *httpEntity1Delivery) Start() error {
 	fmt.Println("http: Starting up...")
 
 	self.somePrivateMethod()
@@ -34,7 +34,7 @@ func (self *httpEntity1) Start() error {
 	return nil
 }
 
-func (self *httpEntity1) Stop() bool {
+func (self *httpEntity1Delivery) Stop() bool {
 	fmt.Println("http: Stopping...")
 	return true
 }
@@ -42,6 +42,6 @@ func (self *httpEntity1) Stop() bool {
 /* ----------------------------------------------------------------------- */
 
 /* Private funcs/methods */
-func (self *httpEntity1) somePrivateMethod() {
+func (self *httpEntity1Delivery) somePrivateMethod() {
 	fmt.Println("http: Hello world! from somePrivateMethod()")
 }
