@@ -4,15 +4,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rlapz/clean_arch_template/src/model"
 	"github.com/rlapz/clean_arch_template/src/usecase"
-	"go.uber.org/zap"
+	"github.com/sirupsen/logrus"
 )
 
 type UserController struct {
-	log         *zap.SugaredLogger
+	log         *logrus.Logger
 	usecaseUser *usecase.UserUsecase
 }
 
-func NewUserController(log *zap.SugaredLogger, userUsecase *usecase.UserUsecase) *UserController {
+func NewUserController(log *logrus.Logger, userUsecase *usecase.UserUsecase) *UserController {
 	return &UserController{
 		log:         log,
 		usecaseUser: userUsecase,
@@ -22,13 +22,13 @@ func NewUserController(log *zap.SugaredLogger, userUsecase *usecase.UserUsecase)
 func (u *UserController) Login(ctx *fiber.Ctx) error {
 	req := new(model.UserLoginRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		u.log.Errorf("Failed to parse request body: %+v", err)
+		u.log.Printf("Failed to parse request body: %+v", err)
 		return fiber.ErrBadRequest
 	}
 
 	res, err := u.usecaseUser.Login(ctx.UserContext(), req)
 	if err != nil {
-		u.log.Errorf("Failed to login: %+v", err)
+		u.log.Printf("Failed to login: %+v", err)
 		return err
 	}
 

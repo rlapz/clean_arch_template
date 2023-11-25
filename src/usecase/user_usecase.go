@@ -9,18 +9,18 @@ import (
 	"github.com/rlapz/clean_arch_template/src/entity"
 	"github.com/rlapz/clean_arch_template/src/model"
 	"github.com/rlapz/clean_arch_template/src/repo"
-	"go.uber.org/zap"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUsecase struct {
-	log      *zap.SugaredLogger
+	log      *logrus.Logger
 	validate *validator.Validate
 
 	userRepo *repo.UserRepo
 }
 
-func NewUserUsecase(log *zap.SugaredLogger, validate *validator.Validate, userRepo *repo.UserRepo) *UserUsecase {
+func NewUserUsecase(log *logrus.Logger, validate *validator.Validate, userRepo *repo.UserRepo) *UserUsecase {
 	return &UserUsecase{
 		log:      log,
 		validate: validate,

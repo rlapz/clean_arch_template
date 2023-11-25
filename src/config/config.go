@@ -2,8 +2,8 @@ package config
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
 )
 
 type DbConfig struct {
@@ -23,7 +23,7 @@ type Config struct {
 	AppName  string
 	Http     HttpConfig
 	Db       DbConfig
-	Log      *zap.SugaredLogger
+	Log      *logrus.Logger
 	Validate *validator.Validate
 }
 
@@ -42,20 +42,6 @@ func Load(isProduction bool) (*Config, error) {
 		return nil, err
 	}
 
-	var logger *zap.Logger
-	var err error
-	if isProduction {
-		logger, err = zap.NewProduction()
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		logger, err = zap.NewDevelopment()
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return &Config{
 		AppName: viper.GetString("app.name"),
 		Http: HttpConfig{
@@ -69,7 +55,7 @@ func Load(isProduction bool) (*Config, error) {
 			Name:     viperConfig.GetString("db.name"),
 			Password: viperConfig.GetString("db.password"),
 		},
-		Log:      logger.Sugar(),
+		Log:      logrus.New(),
 		Validate: validator.New(),
 	}, nil
 }

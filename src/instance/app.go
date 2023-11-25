@@ -46,7 +46,7 @@ func NewRoute(db *sql.DB, fiberApp *fiber.App, config *config.Config) *http.Rout
 	/*
 	 * controllers
 	 */
-	healthController := http.NewHealthController()
+	healthController := http.NewHealthController(config.Log)
 	userController := http.NewUserController(config.Log, userUsecase)
 
 	return &http.Route{
