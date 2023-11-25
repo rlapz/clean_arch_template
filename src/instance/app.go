@@ -47,6 +47,7 @@ func RunApp(isProduction bool) error {
 	if err != nil {
 		return fmt.Errorf("RunApp: NewDatabase: %s", err)
 	}
+	defer db.Close()
 
 	fiberApp := fiber.New(fiber.Config{
 		AppName: config.AppName,

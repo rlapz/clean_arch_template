@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -10,7 +12,12 @@ type DbConfig struct {
 	Host     string
 	Port     uint16
 	Name     string
+	User     string
 	Password string
+
+	ConnectionLifetimeMax time.Duration
+	ConnectionsOpenMax    int
+	ConnectionsIdleMax    int
 }
 
 type HttpConfig struct {
@@ -50,10 +57,14 @@ func Load(isProduction bool) (*Config, error) {
 			IsPrefork: viperConfig.GetBool("http.is_prefork"),
 		},
 		Db: DbConfig{
-			Host:     viperConfig.GetString("db.host"),
-			Port:     viperConfig.GetUint16("db.port"),
-			Name:     viperConfig.GetString("db.name"),
-			Password: viperConfig.GetString("db.password"),
+			Host:                  viperConfig.GetString("db.host"),
+			Port:                  viperConfig.GetUint16("db.port"),
+			Name:                  viperConfig.GetString("db.name"),
+			User:                  viperConfig.GetString("db.User"),
+			Password:              viperConfig.GetString("db.password"),
+			ConnectionLifetimeMax: viperConfig.GetDuration("db.connection_lifetime_max"),
+			ConnectionsOpenMax:    viperConfig.GetInt("db.connections_open_max"),
+			ConnectionsIdleMax:    viperConfig.GetInt("db.connections_idle_max"),
 		},
 		Log:      logrus.New(),
 		Validate: validator.New(),
