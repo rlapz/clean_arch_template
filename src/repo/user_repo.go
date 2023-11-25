@@ -14,19 +14,19 @@ type UserRepo struct {
 
 func NewUserRepo(log *logrus.Logger, db *sql.DB) *UserRepo {
 	return &UserRepo{
+		Db:  db,
 		Log: log,
 	}
 }
 
-func (u *UserRepo) FindById(userRet *entity.User, id string) error {
-	_ = u.Db
-	return nil
+func (u *UserRepo) FindById(id string) (*entity.User, error) {
+	return nil, nil
 }
 
-func (u *UserRepo) FindByToken(userRet *entity.User, token string) error {
-	return nil
+func (u *UserRepo) FindByToken(token string) (*entity.User, error) {
+	return nil, nil
 }
 
-func (u *UserRepo) Update(userIn *entity.User) error {
+func (u *UserRepo) Update(user *entity.User) error {
 	return nil
 }

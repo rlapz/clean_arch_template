@@ -6,7 +6,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/rlapz/clean_arch_template/src/entity"
 	"github.com/rlapz/clean_arch_template/src/model"
 	"github.com/rlapz/clean_arch_template/src/repo"
 	"github.com/sirupsen/logrus"
@@ -29,20 +28,13 @@ func NewUserUsecase(log *logrus.Logger, validate *validator.Validate, userRepo *
 }
 
 func (u *UserUsecase) Login(ctx context.Context, userReq *model.UserLoginRequest) (*model.UserResponse, error) {
-	tx, err := u.userRepo.Db.BeginTx(ctx, nil)
-	if err != nil {
-		u.log.Errorf("[%s]: Failed begin transaction: %+v:", userReq.Id, err)
-		return nil, fiber.ErrInternalServerError
-	}
-	defer tx.Rollback()
-
 	if err := u.validate.Struct(userReq); err != nil {
 		u.log.Errorf("[%s]: Invalid request body: %+v:", userReq.Id, err)
 		return nil, fiber.ErrBadRequest
 	}
 
-	newUser := new(entity.User)
-	if err := u.userRepo.FindById(newUser, userReq.Id); err != nil {
+	newUser, err := u.userRepo.FindById(userReq.Id)
+	if err != nil {
 		u.log.Errorf("[%s]: Failed find user by id: %+v:", userReq.Id, err)
 		return nil, fiber.ErrUnauthorized
 	}
@@ -55,11 +47,6 @@ func (u *UserUsecase) Login(ctx context.Context, userReq *model.UserLoginRequest
 	newUser.Token = uuid.New().String()
 	if err := u.userRepo.Update(newUser); err != nil {
 		u.log.Errorf("[%s]: Failed update user: %+v:", userReq.Id, err)
-		return nil, fiber.ErrInternalServerError
-	}
-
-	if err := tx.Commit(); err != nil {
-		u.log.Errorf("[%s]: Failed commit transaction: %+v:", userReq.Id, err)
 		return nil, fiber.ErrInternalServerError
 	}
 

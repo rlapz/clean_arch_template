@@ -22,13 +22,13 @@ func NewUserController(log *logrus.Logger, userUsecase *usecase.UserUsecase) *Us
 func (u *UserController) Login(ctx *fiber.Ctx) error {
 	req := new(model.UserLoginRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		u.log.Printf("Failed to parse request body: %+v", err)
+		u.log.Errorf("Failed to parse request body: %+v", err)
 		return fiber.ErrBadRequest
 	}
 
 	res, err := u.usecaseUser.Login(ctx.UserContext(), req)
 	if err != nil {
-		u.log.Printf("Failed to login: %+v", err)
+		u.log.Errorf("Failed to login: %+v", err)
 		return err
 	}
 
