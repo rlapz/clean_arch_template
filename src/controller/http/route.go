@@ -11,14 +11,18 @@ type Route struct {
 	UserController   *UserController
 }
 
-func (r *Route) SetupRoute() {
-	r.setupRouteGuestV1()
+func (r *Route) SetupRoutes() {
+	r.setupTestsV1()
+	r.setupRouteGuestsV1()
 }
 
 /*
  * Version 1
  */
-func (r *Route) setupRouteGuestV1() {
-	r.Fiber.Get("/api/v1/health", r.HealthController.Check)
+func (r *Route) setupRouteGuestsV1() {
 	r.Fiber.Post("/api/v1/users/login", r.UserController.Login)
+}
+
+func (r *Route) setupTestsV1() {
+	r.Fiber.Get("/api/v1/health", r.HealthController.Check)
 }

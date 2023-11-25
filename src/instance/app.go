@@ -12,7 +12,7 @@ import (
 	"github.com/rlapz/clean_arch_template/src/usecase"
 )
 
-func NewRoute(db *sql.DB, fiberApp *fiber.App, config *config.Config) *http.Route {
+func NewRoutes(db *sql.DB, fiberApp *fiber.App, config *config.Config) *http.Route {
 	/*
 	 * repos
 	 */
@@ -67,7 +67,7 @@ func RunApp(isProduction bool) error {
 	})
 
 	// set the routes
-	NewRoute(db, fiberApp, config).SetupRoute()
+	NewRoutes(db, fiberApp, config).SetupRoutes()
 
 	err = fiberApp.Listen(fmt.Sprintf("%s:%d", config.Http.Host, config.Http.Port))
 	if err != nil {
