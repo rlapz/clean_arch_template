@@ -12,26 +12,6 @@ import (
 	"github.com/rlapz/clean_arch_template/src/usecase"
 )
 
-func NewFiberApp(config *config.Config) *fiber.App {
-	return fiber.New(fiber.Config{
-		AppName: config.AppName,
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			status := fiber.StatusInternalServerError
-			if e, ok := err.(*fiber.Error); ok {
-				status = e.Code
-			}
-
-			return ctx.Status(status).JSON(
-				model.WebResponse[any]{
-					Success: false,
-					Message: err.Error(),
-				},
-			)
-		},
-		Prefork: config.Http.IsPrefork,
-	})
-}
-
 func NewRoute(db *sql.DB, fiberApp *fiber.App, config *config.Config) *http.Route {
 	/*
 	 * repos
@@ -68,7 +48,25 @@ func RunApp(isProduction bool) error {
 		return fmt.Errorf("RunApp: NewDatabase: %s", err)
 	}
 
-	fiberApp := NewFiberApp(config)
+	fiberApp := fiber.New(fiber.Config{
+		AppName: config.AppName,
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			status := fiber.StatusInternalServerError
+			if e, ok := err.(*fiber.Error); ok {
+				status = e.Code
+			}
+
+			return ctx.Status(status).JSON(
+				model.WebResponse[any]{
+					Success: false,
+					Message: err.Error(),
+				},
+			)
+		},
+		Prefork: config.Http.IsPrefork,
+	})
+
+	// set the routes
 	NewRoute(db, fiberApp, config).SetupRoute()
 
 	err = fiberApp.Listen(fmt.Sprintf("%s:%d", config.Http.Host, config.Http.Port))
