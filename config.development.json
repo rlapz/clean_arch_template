@@ -1,0 +1,13 @@
+{
+    "app": {
+        "name": "myApp"
+    },
+    "http": {
+        "host": "127.0.0.1",
+        "port": 8003,
+        "prefork": true
+    },
+    "database": {
+        "host": "127.0.0.1"
+    }
+}
