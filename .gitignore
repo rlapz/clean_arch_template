@@ -20,5 +20,5 @@
 # Go workspace file
 go.work
 
-config.develoment.json
+config.development.json
 config.production.json
