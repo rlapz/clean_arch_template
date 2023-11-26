@@ -59,7 +59,8 @@ func (h *Http) validate() {
  * App
  */
 type App struct {
-	Name string
+	Name    string
+	LogFile string
 }
 
 func (a *App) validate() {
@@ -94,7 +95,8 @@ func Load(isProduction bool) (*Config, error) {
 
 	ret := Config{
 		App: App{
-			Name: config.GetString("app.name"),
+			Name:    config.GetString("app.name"),
+			LogFile: config.GetString("app.log_file"),
 		},
 		Http: Http{
 			Host:      config.GetString("http.host"),

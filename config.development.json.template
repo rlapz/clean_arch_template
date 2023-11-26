@@ -1,6 +1,7 @@
 {
     "app": {
-        "name": "myApp"
+        "name": "myApp",
+        "log_file": "log.txt"
     },
     "http": {
         "host": "127.0.0.1",

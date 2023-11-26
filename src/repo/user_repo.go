@@ -4,18 +4,15 @@ import (
 	"database/sql"
 
 	"github.com/rlapz/clean_arch_template/src/entity"
-	"github.com/sirupsen/logrus"
 )
 
 type UserRepo struct {
-	Db  *sql.DB
-	Log *logrus.Logger
+	Db *sql.DB
 }
 
-func NewUserRepo(log *logrus.Logger, db *sql.DB) *UserRepo {
+func NewUserRepo(db *sql.DB) *UserRepo {
 	return &UserRepo{
-		Db:  db,
-		Log: log,
+		Db: db,
 	}
 }
 

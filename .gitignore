@@ -22,3 +22,5 @@ go.work
 
 config.development.json
 config.production.json
+log.txt
+main

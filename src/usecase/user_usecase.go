@@ -8,18 +8,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/rlapz/clean_arch_template/src/model"
 	"github.com/rlapz/clean_arch_template/src/repo"
-	"github.com/sirupsen/logrus"
+	"github.com/rlapz/clean_arch_template/src/util"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUsecase struct {
-	log      *logrus.Logger
+	log      *util.Logger
 	validate *validator.Validate
 
 	userRepo *repo.UserRepo
 }
 
-func NewUserUsecase(log *logrus.Logger, validate *validator.Validate, userRepo *repo.UserRepo) *UserUsecase {
+func NewUserUsecase(log *util.Logger, validate *validator.Validate, userRepo *repo.UserRepo) *UserUsecase {
 	return &UserUsecase{
 		log:      log,
 		validate: validate,
@@ -29,24 +29,24 @@ func NewUserUsecase(log *logrus.Logger, validate *validator.Validate, userRepo *
 
 func (u *UserUsecase) Login(ctx context.Context, userReq *model.UserLoginRequest) (*model.UserResponse, error) {
 	if err := u.validate.Struct(userReq); err != nil {
-		u.log.Errorf("[%s]: Invalid request body: %+v:", userReq.Id, err)
+		u.log.Errorf("[%s] Invalid request body: %+v", userReq.Id, err)
 		return nil, fiber.ErrBadRequest
 	}
 
 	newUser, err := u.userRepo.FindById(userReq.Id)
 	if err != nil {
-		u.log.Errorf("[%s]: Failed find user by id: %+v:", userReq.Id, err)
+		u.log.Errorf("[%s] Failed find user by id: %+v", userReq.Id, err)
 		return nil, fiber.ErrUnauthorized
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(newUser.Password), []byte(userReq.Password)); err != nil {
-		u.log.Errorf("[%s]: Failed compare the password: %+v:", userReq.Id, err)
+		u.log.Errorf("[%s] Failed compare the password: %+v", userReq.Id, err)
 		return nil, fiber.ErrUnauthorized
 	}
 
 	newUser.Token = uuid.New().String()
 	if err := u.userRepo.Update(newUser); err != nil {
-		u.log.Errorf("[%s]: Failed update user: %+v:", userReq.Id, err)
+		u.log.Errorf("[%s] Failed update user: %+v", userReq.Id, err)
 		return nil, fiber.ErrInternalServerError
 	}
 
@@ -61,9 +61,14 @@ func (u *UserUsecase) Login(ctx context.Context, userReq *model.UserLoginRequest
 
 // test
 func (u *UserUsecase) GetById(ctx context.Context, id string) (*model.UserResponse, error) {
+	if len(id) > 256 {
+		u.log.Errorf("[%s] Failed find user by id: %s:", id, "too long")
+		return nil, fiber.NewError(fiber.StatusBadRequest, "\"id\" too long")
+	}
+
 	ret, err := u.userRepo.FindById(id)
 	if err != nil {
-		u.log.Errorf("[%s]: Failed find user by id: %+v:", id, err)
+		u.log.Errorf("[%s] Failed find user by id: %+v", id, err)
 		return nil, fiber.ErrInternalServerError
 	}
 

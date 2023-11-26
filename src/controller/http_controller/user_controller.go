@@ -4,17 +4,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rlapz/clean_arch_template/src/model"
 	"github.com/rlapz/clean_arch_template/src/usecase"
-	"github.com/sirupsen/logrus"
+	"github.com/rlapz/clean_arch_template/src/util"
 )
 
 type UserController struct {
-	log         *logrus.Logger
+	log         *util.Logger
 	usecaseUser *usecase.UserUsecase
 }
 
-func NewUserController(log *logrus.Logger, userUsecase *usecase.UserUsecase) *UserController {
+func NewUserController(logger *util.Logger, userUsecase *usecase.UserUsecase) *UserController {
 	return &UserController{
-		log:         log,
+		log:         logger,
 		usecaseUser: userUsecase,
 	}
 }
@@ -22,13 +22,12 @@ func NewUserController(log *logrus.Logger, userUsecase *usecase.UserUsecase) *Us
 func (u *UserController) Login(ctx *fiber.Ctx) error {
 	req := new(model.UserLoginRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		u.log.Errorf("Failed to parse request body: %+v", err)
+		u.log.Errorf("Login: Failed to parse request body: %+v", err)
 		return fiber.ErrBadRequest
 	}
 
 	res, err := u.usecaseUser.Login(ctx.UserContext(), req)
 	if err != nil {
-		u.log.Errorf("Failed to login: %+v", err)
 		return err
 	}
 
@@ -46,7 +45,6 @@ func (u *UserController) GetById(ctx *fiber.Ctx) error {
 
 	ret, err := u.usecaseUser.GetById(ctx.UserContext(), id)
 	if err != nil {
-		u.log.Errorf("Failed to get user by id: \"%s\":%+v", id, err)
 		return err
 	}
 
