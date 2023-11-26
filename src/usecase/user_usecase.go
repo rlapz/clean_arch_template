@@ -58,3 +58,24 @@ func (u *UserUsecase) Login(ctx context.Context, userReq *model.UserLoginRequest
 		UpdatedAt: newUser.UpdatedAt,
 	}, nil
 }
+
+// test
+func (u *UserUsecase) GetById(ctx context.Context, id string) (*model.UserResponse, error) {
+	ret, err := u.userRepo.FindById(id)
+	if err != nil {
+		u.log.Errorf("[%s]: Failed find user by id: %+v:", id, err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	if ret == nil {
+		return nil, nil
+	}
+
+	return &model.UserResponse{
+		Id:        ret.Id,
+		Name:      ret.Name,
+		Token:     ret.Token,
+		CreatedAt: ret.CreatedAt,
+		UpdatedAt: ret.UpdatedAt,
+	}, nil
+}

@@ -11,7 +11,14 @@ import (
 
 func NewDatabase(config *config.Config) (*sql.DB, error) {
 	dbp := config.Db
-	param := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dbp.User, dbp.Password, dbp.Host, dbp.Port, dbp.Name)
+	args := ""
+
+	if len(config.Db.Args) > 0 {
+		args = fmt.Sprint("?", config.Db.Args)
+	}
+
+	param := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s%s", dbp.User, dbp.Password, dbp.Host,
+		dbp.Port, dbp.Name, args)
 
 	db, err := sql.Open("mysql", param)
 	if err != nil {

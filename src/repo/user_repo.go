@@ -20,7 +20,32 @@ func NewUserRepo(log *logrus.Logger, db *sql.DB) *UserRepo {
 }
 
 func (u *UserRepo) FindById(id string) (*entity.User, error) {
-	return nil, nil
+	const query = `
+		select  id,
+				name,
+				password,
+				token,
+				created_at,
+				updated_at
+		from user where id = ?
+	`
+
+	r, err := u.Db.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	ret := new(entity.User)
+	if !r.Next() {
+		return nil, nil
+	}
+
+	if err := r.Scan(&ret.Id, &ret.Name, &ret.Password, &ret.Token, &ret.CreatedAt, &ret.UpdatedAt); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
 }
 
 func (u *UserRepo) FindByToken(token string) (*entity.User, error) {

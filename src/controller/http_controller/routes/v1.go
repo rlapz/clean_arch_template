@@ -22,6 +22,9 @@ func (r *RouteV1) SetupRoutes() {
 
 func (r *RouteV1) setupRouteGuests() {
 	r.App.Post("/api/v1/users/login", r.UserController.Login)
+
+	// test
+	r.App.Get("/api/v1/users/:id", r.UserController.GetById)
 }
 
 func (r *RouteV1) setupTests() {

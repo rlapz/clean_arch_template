@@ -1,10 +1,12 @@
 package entity
 
+import "time"
+
 type User struct {
 	Id        string
 	Name      string
 	Password  string
 	Token     string
-	CreatedAt int64
-	UpdatedAt int64
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
 }

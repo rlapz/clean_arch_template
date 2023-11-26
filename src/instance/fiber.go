@@ -10,7 +10,7 @@ import (
 
 func NewFiberApp(config *config.Config) *fiber.App {
 	return fiber.New(fiber.Config{
-		AppName: config.AppName,
+		AppName: config.App.Name,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 

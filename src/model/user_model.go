@@ -1,15 +1,17 @@
 package model
 
+import "time"
+
 /*
  * Responses
  */
 // user
 type UserResponse struct {
-	Id        string `json:"id,omitempty"`
-	Name      string `json:"name,omitempty"`
-	Token     string `json:"token,omitempty"`
-	CreatedAt int64  `json:"created_at,omitempty"`
-	UpdatedAt int64  `json:"updated_at,omitempty"`
+	Id        string     `json:"id,omitempty"`
+	Name      string     `json:"name,omitempty"`
+	Token     string     `json:"token,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
 /*

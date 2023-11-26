@@ -39,3 +39,25 @@ func (u *UserController) Login(ctx *fiber.Ctx) error {
 		},
 	)
 }
+
+// test
+func (u *UserController) GetById(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+
+	ret, err := u.usecaseUser.GetById(ctx.UserContext(), id)
+	if err != nil {
+		u.log.Errorf("Failed to get user by id: \"%s\":%+v", id, err)
+		return err
+	}
+
+	if ret == nil {
+		return fiber.ErrNotFound
+	}
+
+	return ctx.JSON(
+		model.HttpResponse[*model.UserResponse]{
+			Success: true,
+			Data:    ret,
+		},
+	)
+}

@@ -55,7 +55,7 @@ func RunApp(isProduction bool) error {
 	if err != nil {
 		return fmt.Errorf("RunApp: NewDatabase: %s", err)
 	}
-	//defer db.Close()
+	defer db.Close()
 
 	app := NewFiberApp(config)
 
