@@ -1,4 +1,4 @@
-package http
+package http_controller
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -33,7 +33,7 @@ func (u *UserController) Login(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(
-		model.WebResponse[*model.UserResponse]{
+		model.HttpResponse[*model.UserResponse]{
 			Success: true,
 			Data:    res,
 		},

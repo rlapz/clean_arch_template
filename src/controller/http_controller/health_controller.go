@@ -1,4 +1,4 @@
-package http
+package http_controller
 
 import (
 	"time"
@@ -21,7 +21,7 @@ func NewHealthController(logger *logrus.Logger) *HealthController {
 func (u *HealthController) Check(ctx *fiber.Ctx) error {
 	u.log.Printf("hello world! %+v", time.Now())
 	return ctx.JSON(
-		model.WebResponse[any]{
+		model.HttpResponse[any]{
 			Success: true,
 			Message: "healthy enough!",
 		},

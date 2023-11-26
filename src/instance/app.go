@@ -3,41 +3,49 @@ package instance
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rlapz/clean_arch_template/src/config"
-	"github.com/rlapz/clean_arch_template/src/controller/http"
-	"github.com/rlapz/clean_arch_template/src/model"
+	"github.com/rlapz/clean_arch_template/src/controller/http_controller"
+	"github.com/rlapz/clean_arch_template/src/controller/http_controller/routes"
 	"github.com/rlapz/clean_arch_template/src/repo"
 	"github.com/rlapz/clean_arch_template/src/usecase"
+	"github.com/sirupsen/logrus"
 )
 
-func NewRoutes(db *sql.DB, fiberApp *fiber.App, config *config.Config) *http.Route {
+func setupRoutes(app *fiber.App, db *sql.DB, logger *logrus.Logger, validate *validator.Validate) {
 	/*
 	 * repos
 	 */
-	userRepo := repo.NewUserRepo(config.Log, db)
+	userRepo := repo.NewUserRepo(logger, db)
 
 	/*
 	 * usecases
 	 */
-	userUsecase := usecase.NewUserUsecase(config.Log, config.Validate, userRepo)
+	userUsecase := usecase.NewUserUsecase(logger, validate, userRepo)
 
-	/*
-	 * controllers
-	 */
-	healthController := http.NewHealthController(config.Log)
-	userController := http.NewUserController(config.Log, userUsecase)
+	route := routes.RouteV1{
+		App: app,
 
-	return &http.Route{
-		Fiber: fiberApp,
-
-		HealthController: healthController,
-		UserController:   userController,
+		/*
+		 * controllers
+		 */
+		HealthController: http_controller.NewHealthController(logger),
+		UserController:   http_controller.NewUserController(logger, userUsecase),
 	}
+
+	route.SetupRoutes()
 }
 
 func RunApp(isProduction bool) error {
+	logger := logrus.New()
+	validate := validator.New()
+
 	config, err := config.Load(isProduction)
 	if err != nil {
 		return fmt.Errorf("RunApp: config.Load: %s", err)
@@ -47,32 +55,27 @@ func RunApp(isProduction bool) error {
 	if err != nil {
 		return fmt.Errorf("RunApp: NewDatabase: %s", err)
 	}
-	defer db.Close()
+	//defer db.Close()
 
-	fiberApp := fiber.New(fiber.Config{
-		AppName: config.AppName,
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			status := fiber.StatusInternalServerError
-			if e, ok := err.(*fiber.Error); ok {
-				status = e.Code
-			}
-
-			return ctx.Status(status).JSON(
-				model.WebResponse[any]{
-					Success: false,
-					Message: err.Error(),
-				},
-			)
-		},
-		Prefork: config.Http.IsPrefork,
-	})
+	app := NewFiberApp(config)
 
 	// set the routes
-	NewRoutes(db, fiberApp, config).SetupRoutes()
+	setupRoutes(app, db, logger, validate)
 
-	err = fiberApp.Listen(fmt.Sprintf("%s:%d", config.Http.Host, config.Http.Port))
+	// gracefull shutdown
+	notifChan := make(chan os.Signal, 1)
+	signal.Notify(notifChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	go func() {
+		s := <-notifChan
+
+		fmt.Println()
+		logger.Infof("[%+v]: Shutting down the app...", s)
+		app.ShutdownWithTimeout(time.Second * 10)
+	}()
+
+	err = app.Listen(fmt.Sprintf("%s:%d", config.Http.Host, config.Http.Port))
 	if err != nil {
-		return fmt.Errorf("RunApp: fiberApp.Listen: %s", err)
+		return fmt.Errorf("RunApp: app.Listen: %s", err)
 	}
 
 	return nil

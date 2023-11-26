@@ -3,12 +3,10 @@ package config
 import (
 	"time"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-type DbConfig struct {
+type Db struct {
 	Host     string
 	Port     uint16
 	Name     string
@@ -20,18 +18,16 @@ type DbConfig struct {
 	ConnectionsIdleMax    int
 }
 
-type HttpConfig struct {
+type Http struct {
 	Host      string
 	Port      uint16
 	IsPrefork bool
 }
 
 type Config struct {
-	AppName  string
-	Http     HttpConfig
-	Db       DbConfig
-	Log      *logrus.Logger
-	Validate *validator.Validate
+	AppName string
+	Http    Http
+	Db      Db
 }
 
 func Load(isProduction bool) (*Config, error) {
@@ -40,33 +36,31 @@ func Load(isProduction bool) (*Config, error) {
 		configName = "config.production"
 	}
 
-	viperConfig := viper.New()
-	viperConfig.SetConfigName(configName)
-	viperConfig.SetConfigType("json")
-	viperConfig.AddConfigPath(".")
+	config := viper.New()
+	config.SetConfigName(configName)
+	config.SetConfigType("json")
+	config.AddConfigPath(".")
 
-	if err := viperConfig.ReadInConfig(); err != nil {
+	if err := config.ReadInConfig(); err != nil {
 		return nil, err
 	}
 
 	return &Config{
 		AppName: viper.GetString("app.name"),
-		Http: HttpConfig{
-			Host:      viperConfig.GetString("http.host"),
-			Port:      viperConfig.GetUint16("http.port"),
-			IsPrefork: viperConfig.GetBool("http.is_prefork"),
+		Http: Http{
+			Host:      config.GetString("http.host"),
+			Port:      config.GetUint16("http.port"),
+			IsPrefork: config.GetBool("http.is_prefork"),
 		},
-		Db: DbConfig{
-			Host:                  viperConfig.GetString("db.host"),
-			Port:                  viperConfig.GetUint16("db.port"),
-			Name:                  viperConfig.GetString("db.name"),
-			User:                  viperConfig.GetString("db.User"),
-			Password:              viperConfig.GetString("db.password"),
-			ConnectionLifetimeMax: viperConfig.GetDuration("db.connection_lifetime_max"),
-			ConnectionsOpenMax:    viperConfig.GetInt("db.connections_open_max"),
-			ConnectionsIdleMax:    viperConfig.GetInt("db.connections_idle_max"),
+		Db: Db{
+			Host:                  config.GetString("db.host"),
+			Port:                  config.GetUint16("db.port"),
+			Name:                  config.GetString("db.name"),
+			User:                  config.GetString("db.User"),
+			Password:              config.GetString("db.password"),
+			ConnectionLifetimeMax: config.GetDuration("db.connection_lifetime_max"),
+			ConnectionsOpenMax:    config.GetInt("db.connections_open_max"),
+			ConnectionsIdleMax:    config.GetInt("db.connections_idle_max"),
 		},
-		Log:      logrus.New(),
-		Validate: validator.New(),
 	}, nil
 }
